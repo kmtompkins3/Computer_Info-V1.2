@@ -20,11 +20,11 @@ namespace WindowsFormsApplication1
     public partial class Form1 : Form
     {
         NotifyIcon cpuPercentNotifyIcon;//notify icon in notification center
-        Thread cpuPercentageNotify;
-        Thread cpuPercentageWindow;
-        Thread ramPercentageWindow;
-        Thread hardDriveReadWrite;
-        Thread NetworkMonitor;
+        Thread cpuPercentageNotify;//thread to change icon in nofifications
+        Thread cpuPercentageWindow;//thread to output cpu % in window application
+        Thread ramPercentageWindow;//thread to output ram % in window application
+        Thread hardDriveReadWrite;//thread to tell if the hdd is active or idle
+        Thread NetworkMonitor;//thread to grab network speed
 
         Icon cpuPercentIcon;//program basic icon
         #region icon_percent_declare
@@ -137,14 +137,14 @@ namespace WindowsFormsApplication1
             InitializeComponent();
             #region minimize
             //minimize window
-            this.WindowState = FormWindowState.Minimized;
-            this.ShowInTaskbar = false;
+            this.WindowState = FormWindowState.Minimized;//minimizes window
+            this.ShowInTaskbar = false;//doesnt show in task bar
             #endregion
 
 
             #region image_obj
             //icon image to obj
-            cpuPercentIcon = new Icon("cpuussage.ico");
+            cpuPercentIcon = new Icon("cpuussage.ico");//sets the datatype to the image
             #region cpu_percent_obj
             cpu1PercentIcon = new Icon("cpu1Percent.ico");
             cpu2PercentIcon = new Icon("cpu2Percent.ico");
@@ -251,78 +251,77 @@ namespace WindowsFormsApplication1
 
             #region notify_icon
             //notify icon
-            cpuPercentNotifyIcon = new NotifyIcon();
-            cpuPercentNotifyIcon.Icon = cpuPercentIcon;
-            cpuPercentNotifyIcon.Visible = true;
+            cpuPercentNotifyIcon = new NotifyIcon();//creates the icon name "cpuPercentNotifyIcon"
+            cpuPercentNotifyIcon.Icon = cpuPercentIcon; //sets the notify icon to the variable "cpuPercentIcon"
+            cpuPercentNotifyIcon.Visible = true;//makes visible in notifications
             #endregion
 
             #region context_menu
             //notify menu
-            MenuItem quitMenuItem = new MenuItem("Quit");
-            MenuItem openMenuItem = new MenuItem("Open");
-            ContextMenu contextMenu = new ContextMenu();
-            contextMenu.MenuItems.Add(quitMenuItem);
-            contextMenu.MenuItems.Add(openMenuItem);
+            MenuItem quitMenuItem = new MenuItem("Quit");//addes quit option to motification
+            MenuItem openMenuItem = new MenuItem("Open");//addes open option to motification
+            ContextMenu contextMenu = new ContextMenu();//creates context menu
+            contextMenu.MenuItems.Add(quitMenuItem);//added the item to the noficitcation
+            contextMenu.MenuItems.Add(openMenuItem);//added the item to the noficitcation
 
             //sets context menu to icon in nofication bar
-            cpuPercentNotifyIcon.ContextMenu = contextMenu;
+            cpuPercentNotifyIcon.ContextMenu = contextMenu;//added the menu to the icon
             #endregion
 
             #region click_menu
             //notify menu quit click event
-            quitMenuItem.Click += quitMenuItem_Click;
+            quitMenuItem.Click += quitMenuItem_Click;//addes click event to menu object quit
 
             //notify menu open click event
-            openMenuItem.Click += openMenuItem_Click;
+            openMenuItem.Click += openMenuItem_Click;//addes click event to menu object open
 
             //start thread to grab cpu Percentage
-            cpuPercentageNotify = new Thread(new ThreadStart(cpuPercentNotifyThread));
-            cpuPercentageNotify.Start();
-            cpuPercentageWindow = new Thread(new ThreadStart(cpuPercentageWindowThread));
-            cpuPercentageWindow.Start();
-            ramPercentageWindow = new Thread(new ThreadStart(ranPercentWindowThread));
-            ramPercentageWindow.Start();
-            hardDriveReadWrite = new Thread(new ThreadStart(hardDriveReadWriteThread));
-            hardDriveReadWrite.Start();
-            NetworkMonitor = new Thread(new ThreadStart(NetworkMonitorThread));
-            NetworkMonitor.Start();
+            cpuPercentageNotify = new Thread(new ThreadStart(cpuPercentNotifyThread));//creates function for thread
+            cpuPercentageNotify.Start();//starts thread
+            cpuPercentageWindow = new Thread(new ThreadStart(cpuPercentageWindowThread));//creates function for thread
+            cpuPercentageWindow.Start();//starts thread
+            ramPercentageWindow = new Thread(new ThreadStart(ranPercentWindowThread));//creates function for thread
+            ramPercentageWindow.Start();//starts thread
+            hardDriveReadWrite = new Thread(new ThreadStart(hardDriveReadWriteThread));//creates function for thread
+            hardDriveReadWrite.Start();//starts thread
+            NetworkMonitor = new Thread(new ThreadStart(NetworkMonitorThread));//creates function for thread
+            NetworkMonitor.Start();//starts thread
         }
 
-        void openMenuItem_Click(object sender, EventArgs e)
+        void openMenuItem_Click(object sender, EventArgs e)//events for open object clicked
         {
-            this.WindowState = FormWindowState.Maximized;
+            this.WindowState = FormWindowState.Maximized;//maimizes window
         }
 
-        void quitMenuItem_Click(object sender, EventArgs e)
+        void quitMenuItem_Click(object sender, EventArgs e)//events for open object clicked
         {
-            cpuPercentageNotify.Abort();
-            cpuPercentageWindow.Abort();
-            ramPercentageWindow.Abort();
-            hardDriveReadWrite.Abort();
-            NetworkMonitor.Abort();
-            cpuPercentNotifyIcon.Dispose();
-            this.Close();
+            cpuPercentageNotify.Abort();//ends thread
+            cpuPercentageWindow.Abort();//ends thread
+            ramPercentageWindow.Abort();//ends thread
+            hardDriveReadWrite.Abort();//ends thread
+            NetworkMonitor.Abort();//ends thread
+            cpuPercentNotifyIcon.Dispose();//removes notification icon
+            this.Close();//closes the application
         }
             #endregion
 
         #region cpu_precentage_Notify
         //thread to pull cpu percentage
-        public void cpuPercentNotifyThread()
+        public void cpuPercentNotifyThread()//function for thread
         {
             try
             {
-                ManagementClass cpuDataClass = new ManagementClass("Win32_PerfFormattedData_PerfOS_Processor");
+                ManagementClass cpuDataClass = new ManagementClass("Win32_PerfFormattedData_PerfOS_Processor");//opens class for porcessor info
 
                 //loop where finding cpu percentage
                 while (true)
                 {
-                    ManagementObjectCollection cpuDataClassCollection = cpuDataClass.GetInstances();
-                    foreach (ManagementObject obj in cpuDataClassCollection)
+                    ManagementObjectCollection cpuDataClassCollection = cpuDataClass.GetInstances();//collencts data
+                    foreach (ManagementObject obj in cpuDataClassCollection)//reads through collection
                     {
-                        if (obj["Name"].ToString() == "_Total")
+                        if (obj["Name"].ToString() == "_Total")//only take data from total cpu %
                         {
-                            //test to see value of cpu percentage
-                            Debug.WriteLine(Convert.ToUInt64(obj["PercentProcessorTime"]));
+                            Debug.WriteLine(Convert.ToUInt64(obj["PercentProcessorTime"]));//test to see value of cpu percentage
                             #region iconset
                             if (Convert.ToUInt64(obj["PercentProcessorTime"]) == 1)
                             {
@@ -824,7 +823,7 @@ namespace WindowsFormsApplication1
                                 cpuPercentNotifyIcon.Icon = cpu100PercentIcon;
                                 MessageBox.Show("CPU OVERLOAD!!!");
                             }
-                            #endregion
+                            #endregion//if statments for setting notify icon
                         }
                         else
                         {
@@ -832,30 +831,31 @@ namespace WindowsFormsApplication1
                         }
                     }
 
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1000);//sleeps for 1 sec
                 }
             }
-            catch (ThreadAbortException tbe)
+            catch (ThreadAbortException tbe)//if thread ends
             {
-                cpuPercentageNotify.Abort();
-                cpuPercentNotifyIcon.Dispose();
+                cpuPercentageNotify.Abort();//stops thread
+                cpuPercentNotifyIcon.Dispose();//removes notify icon
             }
         }
         #endregion
 
         #region cpu_percentage_window
-        public void cpuPercentageWindowThread()
+        public void cpuPercentageWindowThread()//function for thread
         {
 
             try
             {
-                ManagementClass cpuDataClass = new ManagementClass("Win32_PerfFormattedData_PerfOS_Processor");
+                ManagementClass cpuDataClass = new ManagementClass("Win32_PerfFormattedData_PerfOS_Processor");//conects to processor class
 
                 while (true)
                 {
-                    ManagementObjectCollection cpuDataClassCollection = cpuDataClass.GetInstances();
-                    foreach (ManagementObject obj in cpuDataClassCollection)
+                    ManagementObjectCollection cpuDataClassCollection = cpuDataClass.GetInstances();//gets data
+                    foreach (ManagementObject obj in cpuDataClassCollection)//for each data found
                     {
+                        #region perprocessor
                         if (obj["Name"].ToString() == "0")
                         {
                             cpu0.Invoke((MethodInvoker)(() => cpu0.Text = Convert.ToString(Convert.ToUInt64(obj["PercentProcessorTime"])) + '%'));
@@ -922,63 +922,64 @@ namespace WindowsFormsApplication1
                                 cpu3.ForeColor = Color.FromArgb(240, 12, 12);
                             }
                         }
+                        #endregion//set color for data range
                     }
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1000);//sleep 1 sec
                 }
             }
             catch (ThreadAbortException tbe)
             {
-                cpuPercentageWindow.Abort();
-                cpuPercentNotifyIcon.Dispose();
+                cpuPercentageWindow.Abort();//stops thread
+                cpuPercentNotifyIcon.Dispose();//removes notify icon
             }
         }
         #endregion
 
         #region ram_percentage_window
-        private void ranPercentWindowThread()
+        private void ranPercentWindowThread()//function for thread
         {
             try
             {
-                ManagementClass ramDataClass = new ManagementClass("Win32_PerfFormattedData_PerfOS_Memory");
+                ManagementClass ramDataClass = new ManagementClass("Win32_PerfFormattedData_PerfOS_Memory");//connecrs to memory class
 
                 while (true)
                 {
-                    ManagementObjectCollection ramDataClassCollection = ramDataClass.GetInstances();
-                    foreach (ManagementObject obj in ramDataClassCollection)
+                    ManagementObjectCollection ramDataClassCollection = ramDataClass.GetInstances();//gets data
+                    foreach (ManagementObject obj in ramDataClassCollection)//runs through data
                     {
-                        ram.Invoke((MethodInvoker)(() => ram.Text = Convert.ToString(Convert.ToUInt32(obj["PercentCommittedBytesInUse"])) + '%'));
+                        ram.Invoke((MethodInvoker)(() => ram.Text = Convert.ToString(Convert.ToUInt32(obj["PercentCommittedBytesInUse"])) + '%'));//gets % usage of ram
                     }
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1000);//sleepd 1 sec
                 }
             }
             catch (ThreadAbortException tbe)
             {
-                ramPercentageWindow.Abort();
-                cpuPercentNotifyIcon.Dispose();
+                ramPercentageWindow.Abort();//ends thread
+                cpuPercentNotifyIcon.Dispose();//removes notify icon
             }
         }
         #endregion
 
         #region HDD_Read/Write
-        private void hardDriveReadWriteThread()
+        private void hardDriveReadWriteThread()//function for thread
         {
             try
             {
-                ManagementClass hddDataClass = new ManagementClass("Win32_PerfFormattedData_PerfDisk_PhysicalDisk");
+                ManagementClass hddDataClass = new ManagementClass("Win32_PerfFormattedData_PerfDisk_PhysicalDisk");//connects to physicaldisk class
                 while (true)
                 {
-                    ManagementObjectCollection hddDataClassCollection = hddDataClass.GetInstances();
+                    ManagementObjectCollection hddDataClassCollection = hddDataClass.GetInstances();//gets data
 
-                    foreach (ManagementObject obj in hddDataClassCollection)
+                    foreach (ManagementObject obj in hddDataClassCollection)//runs for each data
                     {
-                        if (obj["Name"].ToString() == "_Total")
+                        if (obj["Name"].ToString() == "_Total")//only uses total
                         {
-                            if (Convert.ToUInt64(obj["DiskBytesPersec"]) > 0)
+                            if (Convert.ToUInt64(obj["DiskBytesPersec"]) > 0)//if active
                             {
                                 HDD_Light.Invoke((MethodInvoker)(() => HDD_Light.BackColor = Color.FromArgb(86, 189, 26)));//green is active
                                 HDD_Light.Invoke((MethodInvoker)(() => HDD_Light.Text = "Active"));
                             }
-                            else
+                            else//if idle
                             {
                                 HDD_Light.Invoke((MethodInvoker)(() => HDD_Light.BackColor = Color.FromArgb(240, 12, 12)));//red inactive
                                 HDD_Light.Invoke((MethodInvoker)(() => HDD_Light.Text = "InActive"));
@@ -988,46 +989,46 @@ namespace WindowsFormsApplication1
                 }
             }catch(ThreadAbortException tbe)
             {
-                hardDriveReadWrite.Abort();
-                cpuPercentNotifyIcon.Dispose();
+                hardDriveReadWrite.Abort();//ends thread
+                cpuPercentNotifyIcon.Dispose();//removes notify icon
             }
         }
         #endregion
 
         #region Network
-        private void NetworkMonitorThread()
+        private void NetworkMonitorThread()//function for thread
         {
             try
             {
-                ManagementClass networkDataClass = new ManagementClass("Win32_PerfFormattedData_Tcpip_NetworkInterface");
+                ManagementClass networkDataClass = new ManagementClass("Win32_PerfFormattedData_Tcpip_NetworkInterface");//connects to network interface class
 
                 while (true)
                 {
-                    ManagementObjectCollection networkDataClassCollection = networkDataClass.GetInstances();
-                    foreach (ManagementObject obj in networkDataClassCollection)
+                    ManagementObjectCollection networkDataClassCollection = networkDataClass.GetInstances();//gets data
+                    foreach (ManagementObject obj in networkDataClassCollection)//runs through data
                     {
                         label4.Invoke((MethodInvoker)(() => label4.Text = Convert.ToString(Convert.ToUInt64(obj["PacketsReceivedPersec"])) + "Mb/S"));//Download
                         label3.Invoke((MethodInvoker)(() => label3.Text = Convert.ToString(Convert.ToUInt64(obj["PacketsSentPersec"])) + "Mb/S"));//upload
                     }
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1000);//sleep 1 sec
                 }
             }
             catch (ThreadAbortException tbe)
             {
-                NetworkMonitor.Abort();
-                cpuPercentNotifyIcon.Dispose();
+                NetworkMonitor.Abort();//ends thread
+                cpuPercentNotifyIcon.Dispose();//removes notify icon
             }
         }
         #endregion
 
         #region RemoveCloseButton
         private const int CP_NOCLOSE_BUTTON = 0x200;
-        protected override CreateParams CreateParams
+        protected override CreateParams CreateParams//overrides form and removes close button
         {
             get
             {
                 CreateParams myCp = base.CreateParams;
-                myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
+                myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;//removes close button
                 return myCp;
             }
         }
