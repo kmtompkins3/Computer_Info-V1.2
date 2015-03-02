@@ -24,6 +24,7 @@ namespace WindowsFormsApplication1
         Thread cpuPercentageWindow;
         Thread ramPercentageWindow;
         Thread hardDriveReadWrite;
+        Thread NetworkMonitor;
 
         Icon cpuPercentIcon;//program basic icon
         #region icon_percent_declare
@@ -283,12 +284,12 @@ namespace WindowsFormsApplication1
             ramPercentageWindow.Start();
             hardDriveReadWrite = new Thread(new ThreadStart(hardDriveReadWriteThread));
             hardDriveReadWrite.Start();
-
+            NetworkMonitor = new Thread(new ThreadStart(NetworkMonitorThread));
+            NetworkMonitor.Start();
         }
 
         void openMenuItem_Click(object sender, EventArgs e)
         {
-            this.ShowInTaskbar = true;
             this.WindowState = FormWindowState.Maximized;
         }
 
@@ -298,6 +299,7 @@ namespace WindowsFormsApplication1
             cpuPercentageWindow.Abort();
             ramPercentageWindow.Abort();
             hardDriveReadWrite.Abort();
+            NetworkMonitor.Abort();
             cpuPercentNotifyIcon.Dispose();
             this.Close();
         }
@@ -988,6 +990,45 @@ namespace WindowsFormsApplication1
             {
                 hardDriveReadWrite.Abort();
                 cpuPercentNotifyIcon.Dispose();
+            }
+        }
+        #endregion
+
+        #region Network
+        private void NetworkMonitorThread()
+        {
+            try
+            {
+                ManagementClass networkDataClass = new ManagementClass("Win32_PerfFormattedData_Tcpip_NetworkInterface");
+
+                while (true)
+                {
+                    ManagementObjectCollection networkDataClassCollection = networkDataClass.GetInstances();
+                    foreach (ManagementObject obj in networkDataClassCollection)
+                    {
+                        label4.Invoke((MethodInvoker)(() => label4.Text = Convert.ToString(Convert.ToUInt64(obj["PacketsReceivedPersec"])) + "Mb/S"));//Download
+                        label3.Invoke((MethodInvoker)(() => label3.Text = Convert.ToString(Convert.ToUInt64(obj["PacketsSentPersec"])) + "Mb/S"));//upload
+                    }
+                    Thread.Sleep(1000);
+                }
+            }
+            catch (ThreadAbortException tbe)
+            {
+                NetworkMonitor.Abort();
+                cpuPercentNotifyIcon.Dispose();
+            }
+        }
+        #endregion
+
+        #region RemoveCloseButton
+        private const int CP_NOCLOSE_BUTTON = 0x200;
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams myCp = base.CreateParams;
+                myCp.ClassStyle = myCp.ClassStyle | CP_NOCLOSE_BUTTON;
+                return myCp;
             }
         }
         #endregion

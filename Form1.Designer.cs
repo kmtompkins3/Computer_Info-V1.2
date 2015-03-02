@@ -42,6 +42,11 @@
             this.ram = new System.Windows.Forms.Label();
             this.HDD_Titel = new System.Windows.Forms.Label();
             this.HDD_Light = new System.Windows.Forms.Label();
+            this.NetworkTitle = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // CpuTitle0
@@ -155,11 +160,61 @@
             this.HDD_Light.Size = new System.Drawing.Size(0, 13);
             this.HDD_Light.TabIndex = 14;
             // 
+            // NetworkTitle
+            // 
+            this.NetworkTitle.AutoSize = true;
+            this.NetworkTitle.Location = new System.Drawing.Point(622, 9);
+            this.NetworkTitle.Name = "NetworkTitle";
+            this.NetworkTitle.Size = new System.Drawing.Size(81, 13);
+            this.NetworkTitle.TabIndex = 15;
+            this.NetworkTitle.Text = "Network Speed";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(639, 30);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(78, 13);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "Upload Speed:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(625, 47);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(92, 13);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "Download Speed:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(724, 30);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 13);
+            this.label3.TabIndex = 18;
+            this.label3.Text = "label3";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(723, 47);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(35, 13);
+            this.label4.TabIndex = 19;
+            this.label4.Text = "label4";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1425, 635);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.NetworkTitle);
             this.Controls.Add(this.HDD_Light);
             this.Controls.Add(this.HDD_Titel);
             this.Controls.Add(this.ram);
@@ -197,6 +252,11 @@
         private System.Windows.Forms.Label ram;
         private System.Windows.Forms.Label HDD_Titel;
         private System.Windows.Forms.Label HDD_Light;
+        private System.Windows.Forms.Label NetworkTitle;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
 
 
 
